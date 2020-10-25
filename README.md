@@ -1,4 +1,4 @@
-# active_learning_meetup
+# Active Learning
 **Author:** Luiz Matias</br>
 2020-10-29
 
