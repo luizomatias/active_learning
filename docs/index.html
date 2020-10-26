@@ -16605,15 +16605,13 @@ div#notebook {
 <span class="n">X_pool_uncert</span> <span class="o">=</span> <span class="n">X_pool</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 <span class="n">y_pool_uncert</span> <span class="o">=</span> <span class="n">y_pool</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 <span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="kn">import</span> <span class="n">clone</span>
-<span class="n">list_index</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="n">list_y</span> <span class="o">=</span> <span class="p">[]</span>
+
 <span class="n">lr2</span> <span class="o">=</span> <span class="n">clone</span><span class="p">(</span><span class="n">learner</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="c1"># Allow our model to query our unlabeled dataset for the most</span>
 <span class="c1"># informative points according to our query strategy (uncertainty sampling).</span>
 <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_QUERIES</span><span class="p">):</span>
     <span class="n">query_index</span><span class="p">,</span> <span class="n">query_instance</span> <span class="o">=</span> <span class="n">lr2</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">X_pool_uncert</span><span class="p">)</span>
-    <span class="n">list_index</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">X_pool_uncert</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">query_index</span><span class="p">)]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
-    <span class="n">list_y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_pool_uncert</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">query_index</span><span class="p">)]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+
     <span class="c1"># Teach our ActiveLearner model the record it has requested.</span>
     <span class="n">X_act</span><span class="p">,</span> <span class="n">y_act</span> <span class="o">=</span> <span class="n">X_pool_uncert</span><span class="p">[</span><span class="n">query_index</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">y_pool_uncert</span><span class="p">[</span><span class="n">query_index</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">)</span>
     <span class="n">lr2</span><span class="o">.</span><span class="n">teach</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X_act</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y_act</span><span class="p">)</span>
