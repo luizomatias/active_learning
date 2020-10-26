@@ -7,34 +7,33 @@ def processing(doc):
     stopwords = nltk.corpus.stopwords.words('english')
     english_words = set(nltk.corpus.words.words())
     pontuacao = string.punctuation
-    # ETAPA 1 - Limpeza de texto
-    # Converte para minúsculo
+    # Convert to lowercase
+
     doc = doc.lower()       
 
-    # Trocar numeros pela string numero
+    # change numbers with the number string
     doc = re.sub(r'[0-9]+', 'numero', doc)
 
-    # Trocar underlines por underline
+    # change underlines for underline
     doc = re.sub(r'[_]+', 'underline', doc)
 
-    # Trocar URL pela string httpaddr
+    # change URL for string httpaddr
     doc = re.sub(r'(http|https)://[^\s]*', 'httpaddr', doc)
 
-    # Trocar Emails pela string emailaddr
+    # change Emails for string emailaddr
     doc = re.sub(r'[^\s]+@[^\s]+', 'emailaddr', doc) 
 
-    # Remover caracteres especiais
+    # remove special characters
     doc = re.sub(r'\\r\\n', ' ', doc)
     doc = re.sub(r'\W', ' ', doc)
 
-    # Remove caracteres simples de uma letra
+    # Remove single characters from a letter
     doc = re.sub(r'\s+[a-zA-Z]\s+', ' ', doc)
     doc = re.sub(r'\^[a-zA-Z]\s+', ' ', doc) 
 
-    # Substitui multiplos espaços por um unico espaço
+    # Replaces multiple spaces with a single space
     doc = re.sub(r'\s+', ' ', doc, flags=re.I)
 
-    # ETAPA 2 - Tratamento da cada palavra
     palavras = []
     for word in nltk.word_tokenize(doc):
         if word in stopwords:
