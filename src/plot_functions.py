@@ -9,7 +9,7 @@ import matplotlib.ticker as ticker
 def plot_distribution(x_raw, y_raw, x_test, y_test):
     df_raw = pd.DataFrame(dict(x=x_raw[:,0], y=x_raw[:,1], label=y_raw))
     df_test = pd.DataFrame(dict(x=x_test[:,0], y=x_test[:,1], label=y_test))
-    colors = {0:'purple', 1:'blue'}
+    colors = {0:'#ef8a62', 1:'#67a9cf'}
     fig, ax = plt.subplots(figsize=(10,4), dpi=100, nrows=1, ncols=2)
     grouped_raw = df_raw.groupby('label')
     grouped_test = df_test.groupby('label')
