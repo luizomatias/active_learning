@@ -1,49 +1,57 @@
-import string
 import re
-import nltk
+from unidecode import unidecode
+from nltk.data import find
+from nltk import download
+from nltk.corpus import stopwords
+from nltk.tokenize.regexp import regexp_tokenize
 
-def processing(doc):
-    lemmatizer = nltk.stem.WordNetLemmatizer()
-    stopwords = nltk.corpus.stopwords.words('english')
-    english_words = set(nltk.corpus.words.words())
-    pontuacao = string.punctuation
-    # Convert to lowercase
+# Download stopwords if it not exists
+try:
+    find("corpora/stopwords")
+except LookupError:
+    download('stopwords')
 
-    doc = doc.lower()       
+# Regex to remove stopwords
+STOPWORDS = ["pra", "pras"] + stopwords.words(["english", "portuguese"])
+STOPWORDS = unidecode(' '.join(STOPWORDS)).lower().split()
+STOPWORDS = list(set(STOPWORDS)) # unique
+STOPWORDS_RE = re.compile(r'\b(' + r'|'.join(STOPWORDS) + r')\b\s*')
 
-    # change numbers with the number string
-    doc = re.sub(r'[0-9]+', 'numero', doc)
+# Regex to replace punctutations and numbers by single space
+NON_ALPHANUM_RE = re.compile('[^a-zA-Z]')
 
-    # change underlines for underline
-    doc = re.sub(r'[_]+', 'underline', doc)
+# Regex to remove single character words
+SINGLE_CHAR_RE = re.compile(r'\s+[a-zA-Z]\s+')
 
-    # change URL for string httpaddr
-    doc = re.sub(r'(http|https)://[^\s]*', 'httpaddr', doc)
+# Regex to replace multiple spaces by single space
+MULTI_SPACE_RE = re.compile(r'\s+')
 
-    # change Emails for string emailaddr
-    doc = re.sub(r'[^\s]+@[^\s]+', 'emailaddr', doc) 
+def clean_text(text, lower=True, remove_accents=True, remove_nonalpha=True, 
+               remove_single_char=True, remove_stopwords=True, 
+               remove_extra_space=True):
+    
+    if lower:
+        text = text.lower()
 
-    # remove special characters
-    doc = re.sub(r'\\r\\n', ' ', doc)
-    doc = re.sub(r'\W', ' ', doc)
+    if remove_accents:
+        text = unidecode(text)
 
-    # Remove single characters from a letter
-    doc = re.sub(r'\s+[a-zA-Z]\s+', ' ', doc)
-    doc = re.sub(r'\^[a-zA-Z]\s+', ' ', doc) 
+    if remove_nonalpha:
+        text = NON_ALPHANUM_RE.sub(' ', text)
 
-    # Replaces multiple spaces with a single space
-    doc = re.sub(r'\s+', ' ', doc, flags=re.I)
+    if remove_single_char:
+        text = SINGLE_CHAR_RE.sub(' ', text)
 
-    palavras = []
-    for word in nltk.word_tokenize(doc):
-        if word in stopwords:
-            continue
-        if word in pontuacao:
-            continue
-        if word not in english_words:
-            continue
+    if remove_stopwords:
+        text = STOPWORDS_RE.sub(' ', text)
 
-        word = lemmatizer.lemmatize(word)
-        palavras.append(word)
+    if remove_extra_space:
+        text = MULTI_SPACE_RE.sub(' ', text)
+    
+    return text.strip()
 
-    return palavras
+def tokenize_text(text):
+
+    words = regexp_tokenize(text, pattern="\s+", gaps=True)
+
+    return words

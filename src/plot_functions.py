@@ -47,7 +47,7 @@ def plot_decision_boundary(x, y, active_model, random):
 
     gs = gridspec.GridSpec(2, 2)
     fig = plt.figure(figsize=(16, 14))
-    labels = ['arctive learning',
+    labels = ['active learning',
             'random']
     for clf, lab, grd in zip([active_model, random],
                             labels,
