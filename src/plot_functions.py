@@ -4,6 +4,9 @@ import matplotlib.gridspec as gridspec
 import itertools
 from mlxtend.plotting import plot_decision_regions
 import matplotlib.ticker as ticker
+from sklearn.pipeline import Pipeline
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.decomposition import TruncatedSVD
 
 
 def plot_distribution(x_raw, y_raw, x_test, y_test):
@@ -81,4 +84,79 @@ def plot_performance(history_random, history_active):
     ax.set_ylabel('Classification Accuracy')
     ax.legend((line1, line2), ('Uncertainty sampling', 'Random'))
 
+    plt.show()
+
+
+
+tf_idf = Pipeline(steps=[
+    ('tfidf', TfidfVectorizer())
+])
+
+def plot_all_distributions(X_raw, y_raw, X_random, X_uncertainty):
+
+    X_sparse = tf_idf.fit_transform(X_raw)
+    # Define our LSA transformer and fit it onto our dataset.
+    svd = TruncatedSVD(n_components=2, random_state=42)
+    data = svd.fit_transform(X_sparse) 
+    # Isolate the data we'll need for plotting.
+    x_component, y_component = data[:, 0], data[:, 1]
+
+    # Plot our dimensionality-reduced (via LSA) dataset.
+    fig, ax = plt.subplots(figsize=(15,7))
+    scatter = ax.scatter(x=x_component, y=y_component, c= y_raw, cmap='viridis')
+    classes =  ['Baseball', 'Hockey', 'Motorcycles']
+
+    legend1 = ax.legend(handles=scatter.legend_elements()[0], labels=classes,
+                    loc="upper left", title="Classes")
+    handles, labels = scatter.legend_elements(prop="sizes", alpha=0.6)
+    plt.title('Distribuição Bidimensional Dados Bruto')
+
+
+    X_sparse_active = tf_idf.fit_transform(X_uncertainty)
+    # Define our LSA transformer and fit it onto our dataset.
+    svd_active = TruncatedSVD(n_components=2, random_state=42)
+    data_active = svd_active.fit_transform(X_sparse_active) 
+    # Isolate the data we'll need for plotting.
+    x_component_active, y_component_active = data_active[:, 0], data_active[:, 1]
+
+    X_sparse_random = tf_idf.fit_transform(X_random)
+    # Define our LSA transformer and fit it onto our dataset.
+    svd_random = TruncatedSVD(n_components=2, random_state=42)
+    data_random = svd_random.fit_transform(X_sparse_random) 
+    # Isolate the data we'll need for plotting.
+    x_component_random, y_component_random = data_random[:, 0], data_random[:, 1]
+    # Plot our dimensionality-reduced (via LSA) dataset.
+
+
+    # Plot our dimensionality-reduced (via LSA) dataset.
+    fig, ax = plt.subplots(figsize=(20,5), nrows=1, ncols=2)
+    scatter = ax[0].scatter(x=x_component, y=y_component, c= '#c2c2c2')
+    scatter = ax[0].scatter(x=x_component_random, y=y_component_random, c='blue', cmap='viridis')
+    scatter = ax[1].scatter(x=x_component, y=y_component, c= '#c2c2c2')
+    scatter = ax[1].scatter(x=x_component_active, y=y_component_active, c='red', cmap='viridis')
+    ax[0].set_title('Distribuição Bidimensional Amostra Aleatória', size=15)
+    ax[1].set_title('Distribuição Bidimensional Amostra Incerta', size=15)
+
+    plt.show()
+
+
+def plot_distribution(X, y, title: str):
+
+    X_tfidf = tf_idf.fit_transform(X)
+    # Define our LSA transformer and fit it onto our dataset.
+    svd = TruncatedSVD(n_components=2, random_state=42)
+    data = svd.fit_transform(X_tfidf) 
+    # Isolate the data we'll need for plotting.
+    x_component, y_component = data[:, 0], data[:, 1]
+
+    # Plot our dimensionality-reduced (via LSA) dataset.
+    fig, ax = plt.subplots(figsize=(15,7))
+    scatter = ax.scatter(x=x_component, y=y_component, c=y, cmap='viridis')
+    classes =  ['Baseball', 'Hockey', 'Motorcycles']
+
+    legend1 = ax.legend(handles=scatter.legend_elements()[0], labels=classes,
+                        loc="upper left", title="Classes")
+    handles, labels = scatter.legend_elements(prop="sizes", alpha=0.6)
+
+    plt.title(title)
     plt.show()
