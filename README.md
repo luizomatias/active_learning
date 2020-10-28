@@ -28,26 +28,25 @@ After this, run Jupyter and select the active_learning kernel to run the noteboo
 ## Project Organization
 ------------
 
-    ├── README.md            <- The top-level README for developers using this project.
-    ├── data
-    │   ├── 
-    │   ├── 
-    │   
+    ├── README.md                       <- The top-level README for developers using this project.
+    │
     │   
     │
-    ├── docs               <- a HTML document about the experiment.
+    ├── docs                            <- a HTML document about the experiment.
     │
-    ├── notebooks          <- Jupyter notebooks.
-    │   ├── 
-    │   ├── 
+    ├── notebooks                       <- Jupyter notebooks.
+    │   ├── active_learning_simulation.py <- active learning with a synthetic data XOR
+    │   ├── active_learning_text_classification.ipynb  <- active learning with a text classification problem
     │   
     │
     │   
     │
-    │── src                 <- custom source code.
-    │   ├── 
+    │── src                             <- custom source code.
+    │   ├── plot_functions.py           <- functions to plot graphs
+    │   ├── preprocessing_functions.py  <- clean text function
     │
-    ├── requirements.txt   <- The requirements file for reproducing the analysis 
+    │
+    ├── requirements.txt                <- The requirements file for reproducing the analysis 
     │
 
 --------
@@ -55,7 +54,6 @@ After this, run Jupyter and select the active_learning kernel to run the noteboo
 
 ## Sources:
 
-<a href="https://gspread.readthedocs.io/en/latest/">gspread API</a>
 
 <a href="http://burrsettles.com/pub/settles.activelearning.pdf">Active Learning Paper</a>
 
