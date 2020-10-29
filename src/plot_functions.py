@@ -257,7 +257,7 @@ def plot_density_distribution(X_raw, X_active, X_random):
      + coord_fixed(ratio=0.5, ylim=(-0.3,0.3))
      + facet_wrap('type')
      + theme_bw()
-     + theme(figure_size=(10, 10), aspect_ratio=0.9)
+     + theme(figure_size=(10, 10), aspect_ratio=0.9, strip_text = element_text(size=13))
      + labs(x = "X1", y = "X2", aspect_ratio=0.3, title= 'Gráfico de Densidade Active Learning x Random')
      + scale_colour_manual({'Active Learning':'red', 'Random':'blue'})
      )
