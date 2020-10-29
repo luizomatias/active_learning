@@ -5,6 +5,7 @@
 ## About
 This repository aims to demonstrate the active learning technique at the machine learning experience meetup
 
+**Slides**: https://docs.google.com/presentation/d/10Ypj-H2PrTngyVJDr211NRmeP13vY2qjvJiJB2fFhCg/edit?usp=sharing
 ## Basic usage:
 
 Fist, make sure you are in a virtual environment. If not (and you don't have virtualenv installed), please follow this commands:
