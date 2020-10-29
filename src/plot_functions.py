@@ -11,6 +11,7 @@ from sklearn.decomposition import TruncatedSVD
 
 
 def plot_distribution(x_raw, y_raw, x_test, y_test):
+    
     """
     Plot the distribuition side by side of two dimensional data
     Arguments
@@ -118,6 +119,7 @@ def plot_decision_boundary(x, y, active_model, random_model):
 
 
 def plot_performance(history_random: list, history_active: list):
+
     """
     Plot the performance query iteration x classification accuracy
     of two models

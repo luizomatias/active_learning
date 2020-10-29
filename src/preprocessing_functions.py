@@ -29,6 +29,7 @@ MULTI_SPACE_RE = re.compile(r'\s+')
 def clean_text(text, lower=True, remove_accents=True, remove_nonalpha=True, 
                remove_single_char=True, remove_stopwords=True, 
                remove_extra_space=True):
+               
     """
     Preprocessing of text feature. Removing stop words, 
     converting all letters to lower case,
