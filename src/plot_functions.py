@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd 
 import matplotlib.gridspec as gridspec
 import itertools
+from plotnine import *
 from mlxtend.plotting import plot_decision_regions
 import matplotlib.ticker as ticker
 from sklearn.pipeline import Pipeline
@@ -88,59 +89,14 @@ def plot_performance(history_random, history_active):
 
 
 
-tf_idf = Pipeline(steps=[
+
+
+
+def dimensionality_reduction_plot(X):
+
+    tf_idf = Pipeline(steps=[
     ('tfidf', TfidfVectorizer())
-])
-
-def plot_all_distributions(X_raw, y_raw, X_random, X_uncertainty):
-
-    X_sparse = tf_idf.fit_transform(X_raw)
-    # Define our LSA transformer and fit it onto our dataset.
-    svd = TruncatedSVD(n_components=2, random_state=42)
-    data = svd.fit_transform(X_sparse) 
-    # Isolate the data we'll need for plotting.
-    x_component, y_component = data[:, 0], data[:, 1]
-
-    # Plot our dimensionality-reduced (via LSA) dataset.
-    fig, ax = plt.subplots(figsize=(15,7))
-    scatter = ax.scatter(x=x_component, y=y_component, c= y_raw, cmap='viridis')
-    classes =  ['Baseball', 'Hockey', 'Motorcycles']
-
-    legend1 = ax.legend(handles=scatter.legend_elements()[0], labels=classes,
-                    loc="upper left", title="Classes")
-    handles, labels = scatter.legend_elements(prop="sizes", alpha=0.6)
-    plt.title('Distribuição Bidimensional Dados Bruto')
-
-
-    X_sparse_active = tf_idf.fit_transform(X_uncertainty)
-    # Define our LSA transformer and fit it onto our dataset.
-    svd_active = TruncatedSVD(n_components=2, random_state=42)
-    data_active = svd_active.fit_transform(X_sparse_active) 
-    # Isolate the data we'll need for plotting.
-    x_component_active, y_component_active = data_active[:, 0], data_active[:, 1]
-
-    X_sparse_random = tf_idf.fit_transform(X_random)
-    # Define our LSA transformer and fit it onto our dataset.
-    svd_random = TruncatedSVD(n_components=2, random_state=42)
-    data_random = svd_random.fit_transform(X_sparse_random) 
-    # Isolate the data we'll need for plotting.
-    x_component_random, y_component_random = data_random[:, 0], data_random[:, 1]
-    # Plot our dimensionality-reduced (via LSA) dataset.
-
-
-    # Plot our dimensionality-reduced (via LSA) dataset.
-    fig, ax = plt.subplots(figsize=(20,5), nrows=1, ncols=2)
-    scatter = ax[0].scatter(x=x_component, y=y_component, c= '#c2c2c2')
-    scatter = ax[0].scatter(x=x_component_random, y=y_component_random, c='blue', cmap='viridis')
-    scatter = ax[1].scatter(x=x_component, y=y_component, c= '#c2c2c2')
-    scatter = ax[1].scatter(x=x_component_active, y=y_component_active, c='red', cmap='viridis')
-    ax[0].set_title('Distribuição Bidimensional Amostra Aleatória', size=15)
-    ax[1].set_title('Distribuição Bidimensional Amostra Incerta', size=15)
-
-    plt.show()
-
-
-def plot_distribution(X, y, title: str):
+    ])
 
     X_tfidf = tf_idf.fit_transform(X)
     # Define our LSA transformer and fit it onto our dataset.
@@ -149,14 +105,57 @@ def plot_distribution(X, y, title: str):
     # Isolate the data we'll need for plotting.
     x_component, y_component = data[:, 0], data[:, 1]
 
-    # Plot our dimensionality-reduced (via LSA) dataset.
-    fig, ax = plt.subplots(figsize=(15,7))
-    scatter = ax.scatter(x=x_component, y=y_component, c=y, cmap='viridis')
-    classes =  ['Baseball', 'Hockey', 'Motorcycles']
+    return x_component, y_component
 
-    legend1 = ax.legend(handles=scatter.legend_elements()[0], labels=classes,
-                        loc="upper left", title="Classes")
-    handles, labels = scatter.legend_elements(prop="sizes", alpha=0.6)
 
-    plt.title(title)
-    plt.show()
+def plot_dimensionality_reduction_distribution(X, y, title: str):
+
+    x_component, y_component = dimensionality_reduction_plot(X)
+
+    d = {'index': x_component, 'col': y_component, 'class': y}
+
+    q_data = pd.DataFrame(data=d)
+    q_data['class'] = q_data['class'].astype('category')
+    q_data.replace({0: 'Motorcycles', 1:'Baseball', 2:'Hockey'}, inplace=True)
+
+    plot = (ggplot()
+     + ggtitle(title)
+     + geom_point(q_data, aes(x='index', y='col', color='class'))
+     + coord_fixed(ratio=0.5, ylim=(-0.3,0.3))
+     + theme_bw()
+     + theme(figure_size=(11, 5))
+     + labs(x = "X1", y = "X2", aspect_ratio=0.3)
+        )
+    plot.draw();
+
+
+def plot_density_distribution(X_raw, X_active, X_random):
+
+    x_component, y_component = dimensionality_reduction_plot(X_raw)
+    x_component_active, y_component_active = dimensionality_reduction_plot(X_active)
+    x_component_random, y_component_random = dimensionality_reduction_plot(X_random)
+
+    d = {'index': x_component, 'col': y_component}
+
+    q_data = pd.DataFrame(data=d)
+
+    d_active = {'index': x_component_active, 'col': y_component_active, 'type': 'Active Learning'}
+    q_active = pd.DataFrame(data=d_active)
+    
+    d_random = {'index': x_component_random, 'col': y_component_random, 'type': 'Random'}
+    q_random = pd.DataFrame(data=d_random)
+
+    df_concat = pd.concat([q_active, q_random], axis=0)
+
+    plot = (ggplot(df_concat, aes(x='index', y='col', color='type'))
+     + ggtitle('Titulo')
+     + geom_point(q_data, aes(x='index', y='col'), color='gray', alpha=0.2)
+     + geom_point()
+     + stat_density_2d()
+     + coord_fixed(ratio=0.5, ylim=(-0.3,0.3))
+     + facet_wrap('type')
+     + theme_bw()
+     + theme(figure_size=(11, 14), aspect_ratio=0.9)
+     + labs(x = "X1", y = "X2", aspect_ratio=0.3, title= 'Gráfico de Densidade Active Learning x Random')
+     )
+    plot.draw();
