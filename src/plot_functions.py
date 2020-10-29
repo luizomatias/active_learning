@@ -11,6 +11,23 @@ from sklearn.decomposition import TruncatedSVD
 
 
 def plot_distribution(x_raw, y_raw, x_test, y_test):
+    """
+    Plot the distribuition side by side of two dimensional data
+    Arguments
+    ---------
+    x_raw: numpy.ndarray
+        the raw data to be plot
+
+    y_raw: numpy.ndarray
+        the raw data label plot
+
+    x_test: numpy.ndarray
+        the test data to be plot
+
+    y_test: numpy.ndarray
+        the test data to be plot
+
+    """
     df_raw = pd.DataFrame(dict(x=x_raw[:,0], y=x_raw[:,1], label=y_raw))
     df_test = pd.DataFrame(dict(x=x_test[:,0], y=x_test[:,1], label=y_test))
     colors = {0:'#ef8a62', 1:'#67a9cf'}
@@ -33,6 +50,23 @@ def plot_distribution(x_raw, y_raw, x_test, y_test):
 
 def plot_class_predictions(x, y, learner):
 
+    """
+    Plot the prediction of the learner active learning strategy
+    model in the data
+
+    Arguments
+    ---------
+    x: numpy.ndarray
+        the data to be predicted
+
+    y: numpy.ndarray
+        the label of the data to be predicted
+    
+    learner: modAL.models.ActiveLearner
+        the base active learning model 
+
+    """
+
     predictions = learner.predict(x)
     is_correct = (predictions == y)
     unqueried_score = learner.score(x, y)
@@ -47,13 +81,31 @@ def plot_class_predictions(x, y, learner):
     plt.show()
 
 
-def plot_decision_boundary(x, y, active_model, random):
+def plot_decision_boundary(x, y, active_model, random_model):
+
+    """
+    Plot the decision boudary of two models sibe by side
+    Arguments
+    ---------
+    x: numpy.ndarray
+        the raw data to be plot
+
+    y: numpy.ndarray
+        the raw data label plot
+
+    active_model: modAL.models.ActiveLearner
+        the base active learning model 
+
+    random_model: sklearn.svm.SVC
+        the random model
+
+    """
 
     gs = gridspec.GridSpec(2, 2)
     fig = plt.figure(figsize=(16, 14))
-    labels = ['active learning',
-            'random']
-    for clf, lab, grd in zip([active_model, random],
+    labels = ['Active Learning',
+            'Random']
+    for clf, lab, grd in zip([active_model, random_model],
                             labels,
                             itertools.product([0, 1],
                             repeat=2)):
@@ -65,7 +117,20 @@ def plot_decision_boundary(x, y, active_model, random):
     plt.show()
 
 
-def plot_performance(history_random, history_active):
+def plot_performance(history_random: list, history_active: list):
+    """
+    Plot the performance query iteration x classification accuracy
+    of two models
+
+    Arguments
+    ---------
+    history_random: list
+        list of accuracy random model
+
+    history_active:list
+        list of accuracy active learning model
+
+    """
     fig, ax = plt.subplots(figsize=(8.5, 6), dpi=130)
 
     ax.plot(history_active)
@@ -88,11 +153,16 @@ def plot_performance(history_random, history_active):
     plt.show()
 
 
-
-
-
-
 def dimensionality_reduction_plot(X):
+
+    """
+    convert to tf-idf matrix and then Dimensionality reduction
+    using truncated SVD (aka LSA)
+    ---------
+    X: list or pandas.Series
+        the data to covert to tf-idf and Dimensionality reduction
+
+    """
 
     tf_idf = Pipeline(steps=[
     ('tfidf', TfidfVectorizer())
@@ -109,6 +179,21 @@ def dimensionality_reduction_plot(X):
 
 
 def plot_dimensionality_reduction_distribution(X, y, title: str):
+
+    """
+    Plot the dimensionality reduction distribution
+    Arguments
+    ---------
+    X: list or pandas.Series
+        the data to be plot
+
+    y: list or pandas.Series
+        the data label to be plot
+
+    title: str
+        title of the plot 
+
+    """
 
     x_component, y_component = dimensionality_reduction_plot(X)
 
@@ -130,6 +215,21 @@ def plot_dimensionality_reduction_distribution(X, y, title: str):
 
 
 def plot_density_distribution(X_raw, X_active, X_random):
+
+    """
+    Plot the density distribution of two data side by side
+    Arguments
+    ---------
+    X_raw: list or pandas.Series
+        the raw data to be plot
+
+    X_active: list or pandas.Series
+        the active learning data to be plot
+
+    X_random: list or pandas.Series
+        the random data to be plot
+
+    """
 
     x_component, y_component = dimensionality_reduction_plot(X_raw)
     x_component_active, y_component_active = dimensionality_reduction_plot(X_active)
